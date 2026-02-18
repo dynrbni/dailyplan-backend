@@ -1,30 +1,54 @@
 import { Elysia } from "elysia";
 import { getAllUsersController, getUserByIdController, loginUserController, registerUserController, updateUserController, deleteUserController } from "../controllers/user";
+import { jwtVerify } from "../middleware/jwtVerify";
 
 export const getUserRoutes = new Elysia({
     prefix: "/users"
 })
 
 .get('/', async () => getAllUsersController())
+.onBeforeHandle(jwtVerify)
 .get('/:id', async ({params}) => getUserByIdController(params.id))
 
 export const authUserRoutes = new Elysia()
 
-.post('/register', async (ctx) => 
-    await registerUserController(ctx.body as {name: string; email: string; password: string}
-))
-.post('/login', async (ctx) => 
-    await loginUserController(ctx.body as {email: string; password: string})
-)
+.post('/register', async (ctx) => {
+    const result = await registerUserController(ctx.body as {name: string; email: string; password: string});
+    if(result.status === "success" && result.data){
+        const token = await (ctx as any).jwt.sign({
+            id: result.data.id,
+            email:result.data.email
+        })
+        return {
+            result: result,
+            token: token,
+        }
+    }
+    return result;
+})
+.post('/login', async (ctx) => {
+    const result = await loginUserController(ctx.body as {email: string; password: string});
+    if(result.status === "success" && result.data){
+        const token = await (ctx as any).jwt.sign({
+            id: result.data.id,
+            email:result.data.email
+        })
+        return {
+            result: result,
+            token: token,
+        }
+    }
+    return result;
+})
 
 const updateUserRoutes = new Elysia({
     prefix: "/users"
 })
 
+.onBeforeHandle(jwtVerify)
 .put('/:id', async ({params, body}) => {
     return await updateUserController(params.id, body as {name: string; email: string; password: string})
 })
-
 .delete('/:id', async ({params}) => {
     return await deleteUserController(params.id)
 })

@@ -28,10 +28,10 @@ export const getUserByIdController = async (id: string) => {
             }
         })
         if (!user) {
-            return status (404, {
+            return{
                 status: "error",
                 message: "User not found"
-            })
+            }
         }
         return {
             status: "success",
@@ -56,10 +56,10 @@ export const registerUserController = async (options: {name: string, email: stri
             }
         })
         if (existingUser) {
-            return status(400, {
+            return {
                 status: "error",
                 message: "User with this email already exists"
-            })
+            }
         }
         const hashedPassword = await Bun.password.hash(options.password, {
             algorithm: "bcrypt",
@@ -72,7 +72,7 @@ export const registerUserController = async (options: {name: string, email: stri
                 password: hashedPassword,
             }
         })
-        return status(201, {
+        return{
             status: "success",
             data: {
                 id: newUser.id,
@@ -80,7 +80,7 @@ export const registerUserController = async (options: {name: string, email: stri
                 email: newUser.email,
                 password: newUser.password,
             }
-        })  
+        }
     } catch (error) {
         console.error("Error registering user:", error);
         throw error;
@@ -96,19 +96,19 @@ export const loginUserController = async (options: {email: string, password: str
             }
         })
         if (!user) {
-            return status(404, {
+            return{
                 status: "error",
                 message: "User not found"
-            })
+            }
         }
         const isPasswordValid = Bun.password.verify(user.password, options.password);
         if (!isPasswordValid) {
-            return status(401, {
+            return {
                 status: "error",
                 message: "Invalid password"
-            })
+            }
         }
-        return status(200, {
+        return {
             status: "success",
             data: {
                 id: user.id,
@@ -116,7 +116,7 @@ export const loginUserController = async (options: {email: string, password: str
                 email: user.email,
                 msg: "Halo " + user.name + ", selamat datang kembali di DailyPlan!"
             }
-        })
+        }
     } catch (error) {
         console.error("Error logging in user:", error);
         throw error;
@@ -132,10 +132,10 @@ export const updateUserController = async (id: string, options: {name: string; e
             }
         })
         if (!user){
-            return status(404, {
+            return {
                 status: "error",
                 message: "User not found"
-            })
+            }
         }
         const hashedPassword = await Bun.password.hash(options.password, {
             algorithm: "bcrypt",
@@ -151,14 +151,14 @@ export const updateUserController = async (id: string, options: {name: string; e
                 password: hashedPassword,
             }
         })
-        return status(201, {
+        return {
             status: "success",
             data: {
                 id: updatedUser.id,
                 name: updatedUser.name,
                 email: updatedUser.email,
             }
-        })
+        }
     } catch (error) {
         console.error("Error updating user:", error);
         throw error;
@@ -174,10 +174,10 @@ export const deleteUserController = async (id: string) => {
             }
         })
         if (!user){
-            return status(404, {
+            return {
                 status: "error",
                 message: "User not found"
-            })
+            }
         }
         const deletedUser = await prisma.user.update({
             where: {
@@ -187,10 +187,10 @@ export const deleteUserController = async (id: string) => {
                 deletedAt: new Date(),
             }
         })
-        return status(200, {
+        return {
             status: "success",
             message: "User deleted successfully"
-        })
+        }
     } catch (error) {
         console.error("Error deleting user:", error);
         throw error;
