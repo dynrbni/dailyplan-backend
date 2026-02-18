@@ -1,0 +1,47 @@
+import { Elysia } from "elysia";
+import { getAllTodosController, getTodoByIdController, createTodoController, updateTodoController, deleteTodoController } from "../controllers/todo";
+import { jwtVerify } from "../middleware/jwtVerify";
+import { TodoPriority, TodoStatus } from "@prisma/client";
+
+export const todoRoutes = new Elysia({
+    prefix: "/tasks"
+})
+
+.onBeforeHandle(jwtVerify)
+.get('/', async () => getAllTodosController())
+.get('/:id', async ({params}) => getTodoByIdController(params.id))
+.post('/create', async (ctx: any) => {
+    const user = (ctx.headers).user
+    if (!user) {
+        return {
+            status: "error",
+            message: "Unauthorized"
+        }
+    }
+   return await createTodoController(
+    ctx.body as {
+        title: string;
+        description: string;
+        status?: TodoStatus;
+        priority: TodoPriority;
+        dueDate?: Date;
+    },
+    user.id
+   )
+})
+
+.patch('/:id', async ({params, body}) => {
+    return await updateTodoController(params.id, body as {
+        title?: string;
+        description?: string;
+        status?: TodoStatus;
+        priority?: TodoPriority;
+        dueDate?: Date;
+     })
+})
+
+.delete('/:id', async ({params}) => {
+    return await deleteTodoController(params.id)
+})
+
+export default todoRoutes;

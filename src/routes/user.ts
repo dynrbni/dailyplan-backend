@@ -5,13 +5,12 @@ import { jwtVerify } from "../middleware/jwtVerify";
 export const getUserRoutes = new Elysia({
     prefix: "/users"
 })
-
+.onBeforeHandle(jwtVerify)
 .get('/', async () => getAllUsersController())
 .onBeforeHandle(jwtVerify)
 .get('/:id', async ({params}) => getUserByIdController(params.id))
 
 export const authUserRoutes = new Elysia()
-
 .post('/register', async (ctx) => {
     const result = await registerUserController(ctx.body as {name: string; email: string; password: string});
     if(result.status === "success" && result.data){
@@ -46,7 +45,7 @@ const updateUserRoutes = new Elysia({
 })
 
 .onBeforeHandle(jwtVerify)
-.put('/:id', async ({params, body}) => {
+.patch('/:id', async ({params, body}) => {
     return await updateUserController(params.id, body as {name: string; email: string; password: string})
 })
 .delete('/:id', async ({params}) => {

@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 import { jwt } from "@elysiajs/jwt";
 import userRoutes from "../src/routes/user";
+import todoRoutes from "../src/routes/todo";
 import "dotenv/config";
 
 const app = new Elysia()
@@ -13,7 +14,7 @@ const app = new Elysia()
   .get("/", () => "Hello Elysia")
 
   .group("/api", (app) => {
-    return app.use(userRoutes);
+    return app.use(userRoutes).use(todoRoutes);
   })
 
   .listen(process.env.PORT || 8080);
