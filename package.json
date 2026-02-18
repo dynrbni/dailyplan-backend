@@ -14,7 +14,8 @@
     "prisma": "4"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "zod": "^4.3.6"
   },
   "module": "src/index.js"
 }

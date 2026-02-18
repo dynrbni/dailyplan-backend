@@ -46,6 +46,12 @@ export const getTodoByIdController = async (id: string) => {
 // create todo/task
 export const createTodoController = async (options: { title: string; description: string; status?: TodoStatus; priority: TodoPriority; dueDate?: Date; }, id: any) => {
     try {
+        if (!options.title || !options.status || !options.description || !options.priority || !options.dueDate) {
+            return {
+                status: "error",
+                message: "All fields must be filled"
+            }
+        }
         const newTodo = await prisma.todo.create({
             data: {
                 title: options.title,

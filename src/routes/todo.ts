@@ -1,5 +1,6 @@
 import { Elysia } from "elysia";
 import { getAllTodosController, getTodoByIdController, createTodoController, updateTodoController, deleteTodoController } from "../controllers/todo";
+import { createTodoSchema, updateTodoSchema } from "../schemaValidation/todo.schema";
 import { jwtVerify } from "../middleware/jwtVerify";
 import { TodoPriority, TodoStatus } from "@prisma/client";
 
@@ -11,7 +12,14 @@ export const todoRoutes = new Elysia({
 .get('/', async () => getAllTodosController())
 .get('/:id', async ({params}) => getTodoByIdController(params.id))
 .post('/create', async (ctx: any) => {
-    const user = (ctx.headers).user
+    const validation = createTodoSchema.safeParse(ctx.body);
+    if (!validation.success) {
+        return {
+            status: "error",
+            message: validation.error.flatten()
+        }
+    }
+    const user = jwtVerify(ctx);
     if (!user) {
         return {
             status: "error",
@@ -26,11 +34,18 @@ export const todoRoutes = new Elysia({
         priority: TodoPriority;
         dueDate?: Date;
     },
-    user.id
-   )
+    (ctx).headers.user.id
+   ) 
 })
 
 .patch('/:id', async ({params, body}) => {
+    const validation = updateTodoSchema.safeParse(body);
+    if (!validation.success) {
+        return {
+            status: "error",
+            message: validation.error.flatten()
+        }
+    }
     return await updateTodoController(params.id, body as {
         title?: string;
         description?: string;
