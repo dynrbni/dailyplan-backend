@@ -1,4 +1,5 @@
 import { Elysia } from "elysia";
+import { swagger } from "@elysiajs/swagger";
 import { cors } from "@elysiajs/cors";
 import { jwt } from "@elysiajs/jwt";
 import userRoutes from "../src/routes/user";
@@ -6,6 +7,15 @@ import todoRoutes from "../src/routes/todo";
 import "dotenv/config";
 
 const app = new Elysia()
+  .use(swagger({
+    documentation:{
+      info:{
+        title: "DailyPlan API",
+        description: "API for DailyPlan application built with Elysia and Prisma",
+        version: "1.0.0"
+      }
+    }
+  }))
   .use(cors({
     origin: "http://localhost:3000",
     methods: ["GET", "POST", "PATCH", "DELETE"],
