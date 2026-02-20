@@ -123,7 +123,7 @@ export const loginUserController = async (options: {email: string, password: str
 }
 
 //update user by id
-export const updateUserController = async (id: string, options: {name: string; email: string; password: string}) => {
+export const updateUserController = async (id: string, options: {name?: string; email?: string; password?: string}) => {
     try {
         const user = await prisma.user.findUnique({
             where: {
@@ -136,19 +136,22 @@ export const updateUserController = async (id: string, options: {name: string; e
                 message: "User not found"
             }
         }
-        const hashedPassword = await Bun.password.hash(options.password, {
-            algorithm: "bcrypt",
-            cost: 10,
-        })
+
+        const updateData: { name?: string; email?: string; password?: string } = {};
+        if (options.name) updateData.name = options.name;
+        if (options.email) updateData.email = options.email;
+        if (options.password) {
+            updateData.password = await Bun.password.hash(options.password, {
+                algorithm: "bcrypt",
+                cost: 10,
+            });
+        }
+
         const updatedUser = await prisma.user.update({
             where: {
                 id,
             },
-            data: {
-                name: options.name,
-                email: options.email,
-                password: hashedPassword,
-            }
+            data: updateData,
         })
         return {
             status: "success",

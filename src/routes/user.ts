@@ -62,7 +62,7 @@ const updateUserRoutes = new Elysia({
 
 .onBeforeHandle(jwtVerify)
 .patch('/:id', async ({params, body}) => {
-    return await updateUserController(params.id, body as {name: string; email: string; password: string})
+    return await updateUserController(params.id, body as {name?: string; email?: string; password?: string})
 })
 .delete('/:id', async ({params}) => {
     return await deleteUserController(params.id)
