@@ -1,6 +1,7 @@
 {
   "name": "dailyplan-backend",
   "version": "1.0.50",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
@@ -21,6 +22,5 @@
     "bun-types": "latest",
     "typescript": "^5.7.0",
     "zod": "^4.3.6"
-  },
-  "module": "src/index.js"
+  }
 }
