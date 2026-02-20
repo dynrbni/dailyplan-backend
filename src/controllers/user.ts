@@ -1,5 +1,4 @@
 import prisma from "../database/prismaClient";
-import { status } from "elysia"
 
 // get all users
 export const getAllUsersController = async () => {

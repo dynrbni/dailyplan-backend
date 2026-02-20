@@ -19,8 +19,8 @@ export const todoRoutes = new Elysia({
             message: validation.error.flatten()
         }
     }
-    const user = jwtVerify(ctx);
-    if (!user) {
+    const userId = ctx.headers?.user?.id;
+    if (!userId) {
         return {
             status: "error",
             message: "Unauthorized"
@@ -29,12 +29,12 @@ export const todoRoutes = new Elysia({
    return await createTodoController(
     ctx.body as {
         title: string;
-        description: string;
+        description?: string;
         status?: TodoStatus;
-        priority: TodoPriority;
+        priority?: TodoPriority;
         dueDate?: Date;
     },
-    (ctx).headers.user.id
+    userId
    ) 
 })
 
