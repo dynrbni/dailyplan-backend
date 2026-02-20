@@ -21,7 +21,7 @@ const app = new Elysia()
   )
   .use(
     cors({
-      origin: process.env.FRONTEND_URL || "http://localhost:3000",
+      origin: process.env.FRONTEND_URL || "http://localhost:3000" || "https://dynrbni.biz.id" || "https://dailyplan-frontend.vercel.app",
       methods: ["GET", "POST", "PATCH", "DELETE"],
       allowedHeaders: ["Content-Type", "Authorization"],
     })
