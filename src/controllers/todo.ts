@@ -1,11 +1,12 @@
 import prisma from "../database/prismaClient";
 import { TodoStatus, TodoPriority } from "@prisma/client";
 
-//get all todos/tasks
-export const getAllTodosController = async () => {
+//get all todos/tasks (filtered by userId)
+export const getAllTodosController = async (userId: string) => {
     try {
         const todos = await prisma.todo.findMany({
             where:{
+                userId,
                 deletedAt: null
             }
          })
@@ -19,12 +20,14 @@ export const getAllTodosController = async () => {
     }
 }
 
-//get todo/task by id
-export const getTodoByIdController = async (id: string) => {
+//get todo/task by id (scoped to user)
+export const getTodoByIdController = async (id: string, userId: string) => {
     try {
         const todo = await prisma.todo.findFirst({
             where: {
                 id,
+                userId,
+                deletedAt: null
             }
         })
         if (!todo) {
@@ -77,12 +80,14 @@ export const createTodoController = async (options: { title: string; description
     }
 }
 
-//update todo/task (patch)
-export const updateTodoController = async (id: string, options: { title?: string; description?: string; status?: TodoStatus; priority?: TodoPriority; dueDate?: Date; }) => {
+//update todo/task (patch) - scoped to user
+export const updateTodoController = async (id: string, userId: string, options: { title?: string; description?: string; status?: TodoStatus; priority?: TodoPriority; dueDate?: Date; }) => {
     try {
         const existingTodo = await prisma.todo.findFirst({
             where: {
-                id
+                id,
+                userId,
+                deletedAt: null
             }
         })
         if (!existingTodo){
@@ -114,12 +119,14 @@ export const updateTodoController = async (id: string, options: { title?: string
     }
 }
 
-//soft delete tasks
-export const deleteTodoController = async (id: string) => {
+//soft delete tasks - scoped to user
+export const deleteTodoController = async (id: string, userId: string) => {
     try {
         const existingTodo = await prisma.todo.findFirst({
             where: {
-                id
+                id,
+                userId,
+                deletedAt: null
             }
         })
         if (!existingTodo){
